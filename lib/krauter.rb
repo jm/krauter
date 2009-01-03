@@ -94,7 +94,7 @@ module ActionController
         routeset = []
         
         # Populate recognizer sets
-        build_recognizers
+        @recognizers ||= build_recognizers
         
         # Iterate each set of recognizers
         @recognizers.each do |recognizer, routes|
