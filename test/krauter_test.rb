@@ -1,6 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + "/../../../../config/environment")
-require File.expand_path(File.dirname(__FILE__) + "/../lib/krauter")
+require 'rubygems'
+require 'action_controller'
 require 'context'
+
+require File.expand_path(File.dirname(__FILE__) + "/../lib/krauter")
 
 class KrauterTest < Test::Unit::TestCase
   context "When adding routes" do
