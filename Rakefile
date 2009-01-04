@@ -12,6 +12,19 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
+Rake::TestTask.new(:benchmark) do |t|
+  t.libs << 'lib'
+  t.pattern = 'performance/**/*_test.rb'
+  t.verbose = true
+  t.options = '-- --benchmark'
+end
+
+Rake::TestTask.new(:profile) do |t|
+  t.libs << 'lib'
+  t.pattern = 'performance/**/*_test.rb'
+  t.verbose = true
+end
+
 desc 'Generate documentation for the krauter plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
