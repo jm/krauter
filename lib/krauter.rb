@@ -90,7 +90,7 @@ module ActionController
         request_method = (request.request_method || :get)
         
         matched = {}
-        matches = captures = nil
+        route = matches = captures = nil
         routeset = []
         
         # Populate recognizer sets
@@ -102,35 +102,33 @@ module ActionController
           matches = recognizer.match("#{request_method} #{path}")
 
           # Grab set of routes + matched path
-          if matches && !matches.captures.compact.blank?
-            routeset = routes
+          if matches && (capture = matches.captures.compact.first)
+            route = routes[matches.captures.index(capture)]
             break
           end
         end
-                
-        raise "No route matches that path" if routeset.blank?
-        
-        # Match indexes of matched path and route
-        if r = routeset[matches.captures.index(matches.captures.compact.first)]
-          # Get parameter values
-          params = r.params.clone
-          param_matches = path.scan(/#{r.local_recognizer}/).flatten
-          
-          param_list = {}
-          r.params.each_with_index {|p,i| param_list[p] = param_matches[i]}
-          matched = r.arguments.merge(matched).merge(param_list)
 
-          # Default action to index
-          matched[:action] = 'index' if matched[:action] == :action
-        end
-      
+        raise "No route matches that path" unless route
+
+        # Match indexes of matched path and route
+        # Get parameter values
+        params = route.params.clone
+        param_matches = path.scan(/#{route.local_recognizer}/).flatten
+
+        param_list = {}
+        route.params.each_with_index {|p,i| param_list[p] = param_matches[i]}
+        matched = route.arguments.merge(matched).merge(param_list)
+
+        # Default action to index
+        matched[:action] = 'index' if matched[:action] == :action
+
         # Populate request's parameters with arguments from request + static values
         request.path_parameters = matched
         
         # We cache the controller now, but if it's not defined (e.g., it's a param)
         # we need to generate it
-        if r.controller
-          r.controller
+        if route.controller
+          route.controller
         else
           "#{matched[:controller].camelize}Controller".constantize
         end
