@@ -95,7 +95,7 @@ module ActionController
         
         # Populate recognizer sets
         @recognizers ||= build_recognizers
-        
+      
         # Iterate each set of recognizers
         @recognizers.each do |recognizer, routes|
           # Match path to recognizer
@@ -126,7 +126,14 @@ module ActionController
       
         # Populate request's parameters with arguments from request + static values
         request.path_parameters = matched
-        "#{matched[:controller].camelize}Controller".constantize
+        
+        # We cache the controller now, but if it's not defined (e.g., it's a param)
+        # we need to generate it
+        if r.controller
+          r.controller
+        else
+          "#{matched[:controller].camelize}Controller".constantize
+        end
       end
       
       # TODO: I forgot what epic_fail does.  Look that up.
@@ -176,6 +183,8 @@ module ActionController
         current_segment = ""
         
         @routes.each do |route|
+          route.controller = route.controller.constantize if route.controller
+          
           segment = "(^#{route.request_method} #{route.recognizer}$)"
           
           # If our recognizer is getting too big, break it up and start a new one
@@ -203,7 +212,7 @@ module ActionController
 
     class MyRoute
       # TODO: Add dynamic attribute so we can skip parameter interpolation if there aren't any
-      attr_accessor :params, :segments, :arguments
+      attr_accessor :params, :segments, :arguments, :controller
       attr_reader :recognizer, :request_method, :local_recognizer
 
       def initialize(segment_list, local_segments, param_list, request_method, argument_list = {})
@@ -213,6 +222,11 @@ module ActionController
         @recognizer = "/#{@segments.join("\/")}"
         @local_recognizer = "/#{local_segments.join("\/")}"
         @request_method = request_method
+        
+        # If we have the controller, cache it!!
+        if argument_list[:controller]
+          @controller = "#{argument_list.delete(:controller).camelize}Controller"
+        end
       end
     end
   end
