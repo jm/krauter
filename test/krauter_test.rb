@@ -4,6 +4,8 @@ require 'context'
 
 require File.expand_path(File.dirname(__FILE__) + "/../lib/krauter")
 
+class MyControllerController; end
+
 class KrauterTest < Test::Unit::TestCase
   context "When adding routes" do
     before do
@@ -26,7 +28,7 @@ class KrauterTest < Test::Unit::TestCase
     
     it "should set the controller" do
       @router.add_route("/hello", :controller => "my_controller", :action => "do_it")
-      assert @router.routes.first.arguments[:controller] == "my_controller"
+      assert @router.routes.first.controller == "MyControllerController"
     end
     
     it "should set the action" do

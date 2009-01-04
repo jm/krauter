@@ -3,8 +3,13 @@ require 'action_controller'
 
 require File.expand_path(File.dirname(__FILE__) + "/../lib/krauter")
 
-class AController; end
-class ZController; end
+# Setup dummy controllers
+module Admin; end
+
+('A'..'Z').each do |l|
+  Object.const_set("#{l}Controller", Class.new)
+  Admin.const_set("#{l}Controller", Class.new)
+end
 
 class MockRequest
   attr_reader :path, :request_method
