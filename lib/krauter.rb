@@ -190,7 +190,7 @@ module ActionController
           # If our recognizer is getting too big, break it up and start a new one
           # At most, 65417 characters or 253 captures.  
           # TODO: Make these constants that vary depending on Ruby version; 1.9 probably doesn't have these constraints?
-          if (("#{current_segment}|#{segment}").length > 64517) || current_route_set.length >= 253
+          if (("#{current_segment}|#{segment}").length > 65417) || current_route_set.length >= 253
             recognizers << [/#{current_segment}/, current_route_set]
             current_segment = segment
             current_route_set = [route]
