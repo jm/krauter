@@ -85,10 +85,12 @@ module ActionController
       def recognize(request)
         # Normalize path
         path = (request.path.slice(0,1) == "/" ? request.path : "/#{request.path}")
-        
+
         # Default to GET for request method
         request_method = (request.request_method || :get)
-        
+
+        target = "#{request_method} #{path}"
+
         matched = {}
         route = matches = captures = nil
         routeset = []
@@ -99,7 +101,7 @@ module ActionController
         # Iterate each set of recognizers
         @recognizers.each do |recognizer, routes|
           # Match path to recognizer
-          if "#{request_method} #{path}" =~ recognizer
+          if target =~ recognizer
             matches = Regexp.last_match
             # Grab set of routes + matched path
             if capture = matches.captures.compact.first
