@@ -95,16 +95,17 @@ module ActionController
         
         # Populate recognizer sets
         @recognizers ||= build_recognizers
-      
+
         # Iterate each set of recognizers
         @recognizers.each do |recognizer, routes|
           # Match path to recognizer
-          matches = recognizer.match("#{request_method} #{path}")
-
-          # Grab set of routes + matched path
-          if matches && (capture = matches.captures.compact.first)
-            route = routes[matches.captures.index(capture)]
-            break
+          if "#{request_method} #{path}" =~ recognizer
+            matches = Regexp.last_match
+            # Grab set of routes + matched path
+            if capture = matches.captures.compact.first
+              route = routes[matches.captures.index(capture)]
+              break
+            end
           end
         end
 
